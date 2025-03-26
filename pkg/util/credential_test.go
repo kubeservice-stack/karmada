@@ -29,6 +29,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 	"k8s.io/client-go/rest"
+	"k8s.io/utils/ptr"
 
 	clusterv1alpha1 "github.com/karmada-io/karmada/pkg/apis/cluster/v1alpha1"
 	"github.com/karmada-io/karmada/pkg/util/names"
@@ -214,8 +215,8 @@ func TestRegisterClusterInControllerPlane(t *testing.T) {
 				generateClusterInControllerPlane: func(opts ClusterRegisterOption) (*clusterv1alpha1.Cluster, error) {
 					clusterObj := &clusterv1alpha1.Cluster{ObjectMeta: metav1.ObjectMeta{Name: opts.ClusterName}}
 					clusterObj.Spec.SyncMode = clusterv1alpha1.Pull
-					clusterObj.Spec.APIEndpoint = opts.ClusterAPIEndpoint
-					clusterObj.Spec.ProxyURL = opts.ProxyServerAddress
+					clusterObj.Spec.APIEndpoint = ptr.To(opts.ClusterAPIEndpoint)
+					clusterObj.Spec.ProxyURL = ptr.To(opts.ProxyServerAddress)
 					clusterObj.Spec.ImpersonatorSecretRef = &clusterv1alpha1.LocalSecretReference{
 						Namespace: opts.ImpersonatorSecret.Namespace,
 						Name:      opts.ImpersonatorSecret.Name,
@@ -247,8 +248,8 @@ func TestRegisterClusterInControllerPlane(t *testing.T) {
 				generateClusterInControllerPlane: func(opts ClusterRegisterOption) (*clusterv1alpha1.Cluster, error) {
 					clusterObj := &clusterv1alpha1.Cluster{ObjectMeta: metav1.ObjectMeta{Name: opts.ClusterName}}
 					clusterObj.Spec.SyncMode = clusterv1alpha1.Push
-					clusterObj.Spec.APIEndpoint = opts.ClusterAPIEndpoint
-					clusterObj.Spec.ProxyURL = opts.ProxyServerAddress
+					clusterObj.Spec.APIEndpoint = ptr.To(opts.ClusterAPIEndpoint)
+					clusterObj.Spec.ProxyURL = ptr.To(opts.ProxyServerAddress)
 					clusterObj.Spec.ImpersonatorSecretRef = &clusterv1alpha1.LocalSecretReference{
 						Namespace: opts.ImpersonatorSecret.Namespace,
 						Name:      opts.ImpersonatorSecret.Name,

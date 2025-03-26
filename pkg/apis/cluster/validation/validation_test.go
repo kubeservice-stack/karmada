@@ -24,6 +24,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/ptr"
 
 	api "github.com/karmada-io/karmada/pkg/apis/cluster"
 )
@@ -54,7 +55,7 @@ func TestValidateCluster(t *testing.T) {
 			expectError: true,
 		},
 		"invalid apiEndpoint": {
-			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, APIEndpoint: "^Invalid"}},
+			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, APIEndpoint: ptr.To("^Invalid")}},
 			expectError: true,
 		},
 		"empty secretRef": {
@@ -66,19 +67,19 @@ func TestValidateCluster(t *testing.T) {
 			expectError: true,
 		},
 		"invalid proxyURL": {
-			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, ProxyURL: "^Invalid"}},
+			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, ProxyURL: ptr.To("^Invalid")}},
 			expectError: true,
 		},
 		"invalid provider": {
-			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, Provider: "Invalid Provider"}},
+			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, Provider: ptr.To("Invalid Provider")}},
 			expectError: true,
 		},
 		"invalid region": {
-			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, Region: "Invalid Region"}},
+			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, Region: ptr.To("Invalid Region")}},
 			expectError: true,
 		},
 		"invalid zone": {
-			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, Zone: "Invalid Zone"}},
+			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, Zone: ptr.To("Invalid Zone")}},
 			expectError: true,
 		},
 		"invalid zones": {
@@ -86,7 +87,7 @@ func TestValidateCluster(t *testing.T) {
 			expectError: true,
 		},
 		"co-exist zones and zone": {
-			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, Zone: "Zone", Zones: []string{"Zones"}}},
+			cluster:     api.Cluster{ObjectMeta: metav1.ObjectMeta{Name: "foo"}, Spec: api.ClusterSpec{SyncMode: api.Push, Zone: ptr.To("Zone"), Zones: []string{"Zones"}}},
 			expectError: true,
 		},
 		"unsupported taint effect": {

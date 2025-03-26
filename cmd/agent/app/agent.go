@@ -31,6 +31,7 @@ import (
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/component-base/term"
 	"k8s.io/klog/v2"
+	"k8s.io/utils/ptr"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/config"
@@ -443,11 +444,11 @@ func generateClusterInControllerPlane(opts util.ClusterRegisterOption) (*cluster
 	clusterObj := &clusterv1alpha1.Cluster{ObjectMeta: metav1.ObjectMeta{Name: opts.ClusterName}}
 	mutateFunc := func(cluster *clusterv1alpha1.Cluster) {
 		cluster.Spec.SyncMode = clusterv1alpha1.Pull
-		cluster.Spec.APIEndpoint = opts.ClusterAPIEndpoint
-		cluster.Spec.ProxyURL = opts.ProxyServerAddress
+		cluster.Spec.APIEndpoint = ptr.To(opts.ClusterAPIEndpoint)
+		cluster.Spec.ProxyURL = ptr.To(opts.ProxyServerAddress)
 		cluster.Spec.ID = opts.ClusterID
 		if opts.ClusterProvider != "" {
-			cluster.Spec.Provider = opts.ClusterProvider
+			cluster.Spec.Provider = ptr.To(opts.ClusterProvider)
 		}
 
 		if len(opts.ClusterZones) > 0 {
@@ -455,17 +456,17 @@ func generateClusterInControllerPlane(opts util.ClusterRegisterOption) (*cluster
 		}
 
 		if opts.ClusterRegion != "" {
-			cluster.Spec.Region = opts.ClusterRegion
+			cluster.Spec.Region = ptr.To(opts.ClusterRegion)
 		}
 
-		cluster.Spec.InsecureSkipTLSVerification = opts.ClusterConfig.TLSClientConfig.Insecure
+		cluster.Spec.InsecureSkipTLSVerification = ptr.To(opts.ClusterConfig.TLSClientConfig.Insecure)
 
 		if opts.ClusterConfig.Proxy != nil {
 			url, err := opts.ClusterConfig.Proxy(nil)
 			if err != nil {
 				klog.Errorf("clusterConfig.Proxy error, %v", err)
 			} else {
-				cluster.Spec.ProxyURL = url.String()
+				cluster.Spec.ProxyURL = ptr.To(url.String())
 			}
 		}
 		if opts.IsKubeCredentialsEnabled() {

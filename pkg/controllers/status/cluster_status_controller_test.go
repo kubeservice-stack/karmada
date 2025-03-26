@@ -35,6 +35,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	kubernetesfake "k8s.io/client-go/kubernetes/fake"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/utils/ptr"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
@@ -161,7 +162,7 @@ func generateClusterClient(APIEndpoint string) *util.ClusterClient {
 		&clusterv1alpha1.Cluster{
 			ObjectMeta: metav1.ObjectMeta{Name: "test"},
 			Spec: clusterv1alpha1.ClusterSpec{
-				APIEndpoint: APIEndpoint,
+				APIEndpoint: ptr.To(APIEndpoint),
 				SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 			},
 		},
@@ -195,9 +196,9 @@ func TestClusterStatusController_syncClusterStatus(t *testing.T) {
 		cluster := &clusterv1alpha1.Cluster{
 			ObjectMeta: metav1.ObjectMeta{Name: "test"},
 			Spec: clusterv1alpha1.ClusterSpec{
-				APIEndpoint: server.URL,
+				APIEndpoint: ptr.To(server.URL),
 				SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
-				ProxyURL:    "http://1.1.1.1",
+				ProxyURL:    ptr.To("http://1.1.1.1"),
 			},
 		}
 		secret := &corev1.Secret{
@@ -238,9 +239,9 @@ func TestClusterStatusController_syncClusterStatus(t *testing.T) {
 		cluster := &clusterv1alpha1.Cluster{
 			ObjectMeta: metav1.ObjectMeta{Name: "test"},
 			Spec: clusterv1alpha1.ClusterSpec{
-				APIEndpoint: server.URL,
+				APIEndpoint: ptr.To(server.URL),
 				SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
-				ProxyURL:    "http://1.1.1.2",
+				ProxyURL:    ptr.To("http://1.1.1.2"),
 			},
 		}
 		secret := &corev1.Secret{
@@ -284,9 +285,9 @@ func TestClusterStatusController_syncClusterStatus(t *testing.T) {
 		cluster := &clusterv1alpha1.Cluster{
 			ObjectMeta: metav1.ObjectMeta{Name: "test"},
 			Spec: clusterv1alpha1.ClusterSpec{
-				APIEndpoint: server.URL,
+				APIEndpoint: ptr.To(server.URL),
 				SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
-				ProxyURL:    "http://1.1.1.1",
+				ProxyURL:    ptr.To("http://1.1.1.1"),
 			},
 		}
 		secret := &corev1.Secret{
@@ -852,7 +853,7 @@ func TestClusterStatusController_updateStatusIfNeeded(t *testing.T) {
 				Namespace: "karmada",
 			},
 			Status: clusterv1alpha1.ClusterStatus{
-				KubernetesVersion: "v1",
+				KubernetesVersion: ptr.To("v1"),
 			},
 			Spec: clusterv1alpha1.ClusterSpec{
 				ResourceModels: []clusterv1alpha1.ResourceModel{
@@ -891,7 +892,7 @@ func TestClusterStatusController_updateStatusIfNeeded(t *testing.T) {
 		}
 
 		currentClusterStatus := clusterv1alpha1.ClusterStatus{
-			KubernetesVersion: "v2",
+			KubernetesVersion: ptr.To("v2"),
 		}
 
 		c := &ClusterStatusController{
@@ -918,7 +919,7 @@ func TestClusterStatusController_updateStatusIfNeeded(t *testing.T) {
 				Namespace: "karmada",
 			},
 			Status: clusterv1alpha1.ClusterStatus{
-				KubernetesVersion: "v1",
+				KubernetesVersion: ptr.To("v1"),
 			},
 			Spec: clusterv1alpha1.ClusterSpec{
 				ResourceModels: []clusterv1alpha1.ResourceModel{
@@ -957,7 +958,7 @@ func TestClusterStatusController_updateStatusIfNeeded(t *testing.T) {
 		}
 
 		currentClusterStatus := clusterv1alpha1.ClusterStatus{
-			KubernetesVersion: "v2",
+			KubernetesVersion: ptr.To("v2"),
 		}
 
 		c := &ClusterStatusController{
@@ -1039,7 +1040,7 @@ func TestClusterStatusController_initLeaseController(_ *testing.T) {
 			Namespace: "karmada",
 		},
 		Status: clusterv1alpha1.ClusterStatus{
-			KubernetesVersion: "v1",
+			KubernetesVersion: ptr.To("v1"),
 		},
 		Spec: clusterv1alpha1.ClusterSpec{
 			ResourceModels: []clusterv1alpha1.ResourceModel{

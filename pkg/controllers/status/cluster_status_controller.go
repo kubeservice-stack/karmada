@@ -39,6 +39,7 @@ import (
 	"k8s.io/component-helpers/apimachinery/lease"
 	"k8s.io/klog/v2"
 	"k8s.io/utils/clock"
+	"k8s.io/utils/ptr"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -238,7 +239,7 @@ func (c *ClusterStatusController) setCurrentClusterStatus(clusterClient *util.Cl
 	if err != nil {
 		klog.Errorf("Failed to get Kubernetes version for Cluster %s. Error: %v.", cluster.GetName(), err)
 	}
-	currentClusterStatus.KubernetesVersion = clusterVersion
+	currentClusterStatus.KubernetesVersion = ptr.To(clusterVersion)
 
 	var apiEnablementCondition metav1.Condition
 	// get the list of APIs installed in the member cluster

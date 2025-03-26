@@ -18,6 +18,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# fixed: https://tip.golang.org/doc/go1.23#gotypespkggotypes
+export GODEBUG=gotypesalias=0
+
 # For all commands, the working directory is the parent directory(repo root).
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "${REPO_ROOT}"

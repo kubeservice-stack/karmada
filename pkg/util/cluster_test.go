@@ -45,7 +45,7 @@ func newCluster(name string) *clusterv1alpha1.Cluster {
 }
 
 func withAPIEndPoint(cluster *clusterv1alpha1.Cluster, apiEndPoint string) *clusterv1alpha1.Cluster {
-	cluster.Spec.APIEndpoint = apiEndPoint
+	cluster.Spec.APIEndpoint = &apiEndPoint
 	return cluster
 }
 

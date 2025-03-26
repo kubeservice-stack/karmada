@@ -82,10 +82,10 @@ func printCluster(cluster *clusterapis.Cluster, options printers.GenerateOptions
 		row.Cells = append(
 			row.Cells,
 			translateZones(cluster.Spec.Zones),
-			translateOptionalStringField(cluster.Spec.Region),
-			translateOptionalStringField(cluster.Spec.Provider),
+			translateOptionalStringField(*cluster.Spec.Region),
+			translateOptionalStringField(*cluster.Spec.Provider),
 			cluster.Spec.APIEndpoint,
-			translateOptionalStringField(cluster.Spec.ProxyURL))
+			translateOptionalStringField(*cluster.Spec.ProxyURL))
 	}
 	return []metav1.TableRow{row}, nil
 }

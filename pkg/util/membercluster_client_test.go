@@ -30,6 +30,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/client-go/rest"
+	"k8s.io/utils/ptr"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	fakeclient "sigs.k8s.io/controller-runtime/pkg/client/fake"
@@ -113,7 +114,7 @@ func TestNewClusterScaleClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "default", Name: "secret1"},
 						},
 					}).Build(),
@@ -129,7 +130,7 @@ func TestNewClusterScaleClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 						},
 					},
@@ -148,7 +149,7 @@ func TestNewClusterScaleClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 						},
 					},
@@ -325,7 +326,7 @@ func TestNewClusterClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "default", Name: "secret1"},
 						},
 					}).Build(),
@@ -341,7 +342,7 @@ func TestNewClusterClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 						},
 					},
@@ -360,7 +361,7 @@ func TestNewClusterClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 						},
 					},
@@ -380,9 +381,9 @@ func TestNewClusterClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint:                 "https://127.0.0.1",
+							APIEndpoint:                 ptr.To("https://127.0.0.1"),
 							SecretRef:                   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
-							InsecureSkipTLSVerification: true,
+							InsecureSkipTLSVerification: ptr.To(true),
 						},
 					},
 					&corev1.Secret{
@@ -401,9 +402,9 @@ func TestNewClusterClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
-							ProxyURL:    "://",
+							ProxyURL:    ptr.To("://"),
 						},
 					},
 					&corev1.Secret{
@@ -421,9 +422,9 @@ func TestNewClusterClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
-							ProxyURL:    "http://1.1.1.1",
+							ProxyURL:    ptr.To("http://1.1.1.1"),
 						},
 					},
 					&corev1.Secret{
@@ -472,7 +473,7 @@ func TestNewClusterClientSet_ClientWorks(t *testing.T) {
 		&clusterv1alpha1.Cluster{
 			ObjectMeta: metav1.ObjectMeta{Name: clusterName},
 			Spec: clusterv1alpha1.ClusterSpec{
-				APIEndpoint: s.URL,
+				APIEndpoint: ptr.To(s.URL),
 				SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 			},
 		},
@@ -541,7 +542,7 @@ func TestNewClusterDynamicClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "default", Name: "secret1"},
 						},
 					}).Build(),
@@ -556,7 +557,7 @@ func TestNewClusterDynamicClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 						},
 					},
@@ -574,7 +575,7 @@ func TestNewClusterDynamicClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 						},
 					},
@@ -593,7 +594,7 @@ func TestNewClusterDynamicClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 						},
 					},
@@ -612,9 +613,9 @@ func TestNewClusterDynamicClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
-							ProxyURL:    "://",
+							ProxyURL:    ptr.To("://"),
 						},
 					},
 					&corev1.Secret{
@@ -632,9 +633,9 @@ func TestNewClusterDynamicClientSet(t *testing.T) {
 					&clusterv1alpha1.Cluster{
 						ObjectMeta: metav1.ObjectMeta{Name: "test"},
 						Spec: clusterv1alpha1.ClusterSpec{
-							APIEndpoint: "https://127.0.0.1",
+							APIEndpoint: ptr.To("https://127.0.0.1"),
 							SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
-							ProxyURL:    "http://1.1.1.1",
+							ProxyURL:    ptr.To("http://1.1.1.1"),
 						},
 					},
 					&corev1.Secret{
@@ -682,7 +683,7 @@ func TestNewClusterDynamicClientSet_ClientWorks(t *testing.T) {
 		&clusterv1alpha1.Cluster{
 			ObjectMeta: metav1.ObjectMeta{Name: clusterName},
 			Spec: clusterv1alpha1.ClusterSpec{
-				APIEndpoint: s.URL,
+				APIEndpoint: ptr.To(s.URL),
 				SecretRef:   &clusterv1alpha1.LocalSecretReference{Namespace: "ns1", Name: "secret1"},
 			},
 		},

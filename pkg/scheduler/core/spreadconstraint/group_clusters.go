@@ -399,25 +399,25 @@ func (info *GroupClustersInfo) generateRegionInfo(spreadConstraints []policyv1al
 
 	for _, clusterInfo := range info.Clusters {
 		region := clusterInfo.Cluster.Spec.Region
-		if region == "" {
+		if region == nil {
 			continue
 		}
 
-		regionInfo, ok := info.Regions[region]
+		regionInfo, ok := info.Regions[*region]
 		if !ok {
 			regionInfo = RegionInfo{
-				Name:     region,
+				Name:     *region,
 				Zones:    make(map[string]struct{}),
 				Clusters: make([]ClusterDetailInfo, 0),
 			}
 		}
 
-		if clusterInfo.Cluster.Spec.Zone != "" {
-			regionInfo.Zones[clusterInfo.Cluster.Spec.Zone] = struct{}{}
+		if clusterInfo.Cluster.Spec.Zone != nil {
+			regionInfo.Zones[*clusterInfo.Cluster.Spec.Zone] = struct{}{}
 		}
 		regionInfo.Clusters = append(regionInfo.Clusters, clusterInfo)
 		regionInfo.AvailableReplicas += clusterInfo.AvailableReplicas
-		info.Regions[region] = regionInfo
+		info.Regions[*region] = regionInfo
 	}
 
 	var minGroups int
@@ -440,31 +440,31 @@ func (info *GroupClustersInfo) generateProviderInfo(spreadConstraints []policyv1
 
 	for _, clusterInfo := range info.Clusters {
 		provider := clusterInfo.Cluster.Spec.Provider
-		if provider == "" {
+		if provider == nil {
 			continue
 		}
 
-		providerInfo, ok := info.Providers[provider]
+		providerInfo, ok := info.Providers[*provider]
 		if !ok {
 			providerInfo = ProviderInfo{
-				Name:     provider,
+				Name:     *provider,
 				Regions:  make(map[string]struct{}),
 				Zones:    make(map[string]struct{}),
 				Clusters: make([]ClusterDetailInfo, 0),
 			}
 		}
 
-		if clusterInfo.Cluster.Spec.Zone != "" {
-			providerInfo.Zones[clusterInfo.Cluster.Spec.Zone] = struct{}{}
+		if clusterInfo.Cluster.Spec.Zone != nil {
+			providerInfo.Zones[*clusterInfo.Cluster.Spec.Zone] = struct{}{}
 		}
 
-		if clusterInfo.Cluster.Spec.Region != "" {
-			providerInfo.Regions[clusterInfo.Cluster.Spec.Region] = struct{}{}
+		if clusterInfo.Cluster.Spec.Region != nil {
+			providerInfo.Regions[*clusterInfo.Cluster.Spec.Region] = struct{}{}
 		}
 
 		providerInfo.Clusters = append(providerInfo.Clusters, clusterInfo)
 		providerInfo.AvailableReplicas += clusterInfo.AvailableReplicas
-		info.Providers[provider] = providerInfo
+		info.Providers[*provider] = providerInfo
 	}
 
 	var minGroups int

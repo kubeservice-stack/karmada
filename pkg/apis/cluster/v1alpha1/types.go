@@ -75,14 +75,15 @@ type ClusterSpec struct {
 	ID string `json:"id,omitempty"`
 
 	// SyncMode describes how a cluster syncs resources from karmada control plane.
-	// +kubebuilder:validation:Enum=Push;Pull
 	// +required
 	SyncMode ClusterSyncMode `json:"syncMode"`
 
 	// The API endpoint of the member cluster. This can be a hostname,
 	// hostname:port, IP or IP:port.
+	//
+	// +kubebuilder:validation:Minlength=1
 	// +optional
-	APIEndpoint string `json:"apiEndpoint,omitempty"`
+	APIEndpoint *string `json:"apiEndpoint,omitempty"`
 
 	// SecretRef represents the secret that contains mandatory credentials to access the member cluster.
 	// The secret should hold credentials as follows:
@@ -101,14 +102,18 @@ type ClusterSpec struct {
 	// certificate of the cluster it is connecting to. This will make the HTTPS connection between the karmada control
 	// plane and the member cluster insecure.
 	// Defaults to false.
+	//
+	// +kubebuilder:default:=false
 	// +optional
-	InsecureSkipTLSVerification bool `json:"insecureSkipTLSVerification,omitempty"`
+	InsecureSkipTLSVerification *bool `json:"insecureSkipTLSVerification,omitempty"`
 
 	// ProxyURL is the proxy URL for the cluster.
 	// If not empty, the karmada control plane will use this proxy to talk to the cluster.
 	// For more details please refer to: https://github.com/kubernetes/client-go/issues/351
+	//
+	// +kubebuilder:validation:Pattern:="^http(s)?://.+$"
 	// +optional
-	ProxyURL string `json:"proxyURL,omitempty"`
+	ProxyURL *string `json:"proxyURL,omitempty"`
 
 	// ProxyHeader is the HTTP header required by proxy server.
 	// The key in the key-value pair is HTTP header key and the value is the associated header payloads.
@@ -118,17 +123,17 @@ type ClusterSpec struct {
 
 	// Provider represents the cloud provider name of the member cluster.
 	// +optional
-	Provider string `json:"provider,omitempty"`
+	Provider *string `json:"provider,omitempty"`
 
 	// Region represents the region in which the member cluster is located.
 	// +optional
-	Region string `json:"region,omitempty"`
+	Region *string `json:"region,omitempty"`
 
 	// Zone represents the zone in which the member cluster is located.
 	// Deprecated: This field was never been used by Karmada, and it will not be
 	// removed from v1alpha1 for backward compatibility, use Zones instead.
 	// +optional
-	Zone string `json:"zone,omitempty"`
+	Zone *string `json:"zone,omitempty"`
 
 	// Zones represents the failure zones(also called availability zones) of the
 	// member cluster. The zones are presented as a slice to support the case
@@ -210,6 +215,8 @@ type ResourceModel struct {
 	Grade uint `json:"grade"`
 
 	// Ranges describes the resource quota ranges.
+	// +listType=map
+	// +listMapKey=name
 	// +required
 	Ranges []ResourceModelRange `json:"ranges"`
 }
@@ -251,6 +258,7 @@ const (
 )
 
 // ClusterSyncMode describes the mode of synchronization between member cluster and karmada control plane.
+// +kubebuilder:validation:Enum=Push;Pull
 type ClusterSyncMode string
 
 const (
@@ -288,7 +296,7 @@ const (
 type ClusterStatus struct {
 	// KubernetesVersion represents version of the member cluster.
 	// +optional
-	KubernetesVersion string `json:"kubernetesVersion,omitempty"`
+	KubernetesVersion *string `json:"kubernetesVersion,omitempty"`
 
 	// APIEnablements represents the list of APIs installed on the member cluster.
 	// +optional
@@ -399,6 +407,8 @@ type ClusterProxyOptions struct {
 	// For example, the whole request URL is
 	// http://localhost/apis/cluster.karmada.io/v1alpha1/cluster/{clustername}/proxy/api/v1/nodes
 	// Path is api/v1/nodes
+	//
+	// +kubebuilder:validation:MinLength=1
 	// +optional
-	Path string `json:"path,omitempty" protobuf:"bytes,1,opt,name=path"`
+	Path *string `json:"path,omitempty" protobuf:"bytes,1,opt,name=path"`
 }

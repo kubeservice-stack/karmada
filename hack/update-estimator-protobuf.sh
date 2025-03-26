@@ -18,6 +18,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# fixed: https://tip.golang.org/doc/go1.23#gotypespkggotypes
+export GODEBUG=gotypesalias=0
+
 KARMADA_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
 DEFAULT_GOPATH=$(go env GOPATH | awk -F ':' '{print $1}')

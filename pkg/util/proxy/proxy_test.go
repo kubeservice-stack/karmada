@@ -29,6 +29,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apiserver/pkg/authentication/user"
 	"k8s.io/apiserver/pkg/endpoints/request"
+	"k8s.io/utils/ptr"
 
 	clusterapis "github.com/karmada-io/karmada/pkg/apis/cluster"
 	utiltest "github.com/karmada-io/karmada/pkg/util/testing"
@@ -81,7 +82,7 @@ func TestConnectCluster(t *testing.T) {
 			args: args{
 				cluster: &clusterapis.Cluster{
 					ObjectMeta: metav1.ObjectMeta{Namespace: "ns", Name: "cluster"},
-					Spec:       clusterapis.ClusterSpec{APIEndpoint: "h :/ invalid"},
+					Spec:       clusterapis.ClusterSpec{APIEndpoint: ptr.To("h :/ invalid")},
 				},
 				secretGetter: nil,
 			},
@@ -94,8 +95,8 @@ func TestConnectCluster(t *testing.T) {
 				cluster: &clusterapis.Cluster{
 					ObjectMeta: metav1.ObjectMeta{Namespace: "ns", Name: "cluster"},
 					Spec: clusterapis.ClusterSpec{
-						APIEndpoint: s.URL,
-						ProxyURL:    "h :/ invalid",
+						APIEndpoint: ptr.To(s.URL),
+						ProxyURL:    ptr.To("h :/ invalid"),
 					},
 				},
 				secretGetter: nil,
@@ -109,8 +110,8 @@ func TestConnectCluster(t *testing.T) {
 				cluster: &clusterapis.Cluster{
 					ObjectMeta: metav1.ObjectMeta{Namespace: "ns", Name: "cluster"},
 					Spec: clusterapis.ClusterSpec{
-						APIEndpoint: s.URL,
-						ProxyURL:    "http://proxy",
+						APIEndpoint: ptr.To(s.URL),
+						ProxyURL:    ptr.To("http://proxy"),
 					},
 				},
 				secretGetter: nil,
@@ -124,7 +125,7 @@ func TestConnectCluster(t *testing.T) {
 				cluster: &clusterapis.Cluster{
 					ObjectMeta: metav1.ObjectMeta{Namespace: "ns", Name: "cluster"},
 					Spec: clusterapis.ClusterSpec{
-						APIEndpoint:           s.URL,
+						APIEndpoint:           ptr.To(s.URL),
 						ImpersonatorSecretRef: &clusterapis.LocalSecretReference{Namespace: "ns", Name: "secret"},
 					},
 				},
@@ -141,7 +142,7 @@ func TestConnectCluster(t *testing.T) {
 				cluster: &clusterapis.Cluster{
 					ObjectMeta: metav1.ObjectMeta{Namespace: "ns", Name: "cluster"},
 					Spec: clusterapis.ClusterSpec{
-						APIEndpoint:           s.URL,
+						APIEndpoint:           ptr.To(s.URL),
 						ImpersonatorSecretRef: &clusterapis.LocalSecretReference{Namespace: "ns", Name: "secret"},
 					},
 				},
@@ -162,7 +163,7 @@ func TestConnectCluster(t *testing.T) {
 				cluster: &clusterapis.Cluster{
 					ObjectMeta: metav1.ObjectMeta{Namespace: "ns", Name: "cluster"},
 					Spec: clusterapis.ClusterSpec{
-						APIEndpoint:           s.URL,
+						APIEndpoint:           ptr.To(s.URL),
 						ImpersonatorSecretRef: &clusterapis.LocalSecretReference{Namespace: "ns", Name: "secret"},
 					},
 				},
@@ -183,9 +184,9 @@ func TestConnectCluster(t *testing.T) {
 				cluster: &clusterapis.Cluster{
 					ObjectMeta: metav1.ObjectMeta{Namespace: "ns", Name: "cluster"},
 					Spec: clusterapis.ClusterSpec{
-						APIEndpoint:                 s.URL,
+						APIEndpoint:                 ptr.To(s.URL),
 						ImpersonatorSecretRef:       &clusterapis.LocalSecretReference{Namespace: "ns", Name: "secret"},
-						InsecureSkipTLSVerification: true,
+						InsecureSkipTLSVerification: ptr.To(true),
 					},
 				},
 				secretGetter: func(_ context.Context, ns string, name string) (*corev1.Secret, error) {

@@ -178,7 +178,7 @@ func BuildClusterConfig(clusterName string,
 	}
 
 	apiEndpoint := cluster.Spec.APIEndpoint
-	if apiEndpoint == "" {
+	if apiEndpoint == nil {
 		return nil, fmt.Errorf("the api endpoint of cluster %s is empty", clusterName)
 	}
 
@@ -199,11 +199,11 @@ func BuildClusterConfig(clusterName string,
 	// Initialize cluster configuration.
 	clusterConfig := &rest.Config{
 		BearerToken: string(token),
-		Host:        apiEndpoint,
+		Host:        *apiEndpoint,
 	}
 
 	// Handle TLS configuration.
-	if cluster.Spec.InsecureSkipTLSVerification {
+	if cluster.Spec.InsecureSkipTLSVerification != nil && *cluster.Spec.InsecureSkipTLSVerification {
 		clusterConfig.TLSClientConfig.Insecure = true
 	} else {
 		ca, ok := secret.Data[clusterv1alpha1.SecretCADataKey]
@@ -214,8 +214,8 @@ func BuildClusterConfig(clusterName string,
 	}
 
 	// Handle proxy configuration.
-	if cluster.Spec.ProxyURL != "" {
-		proxy, err := url.Parse(cluster.Spec.ProxyURL)
+	if cluster.Spec.ProxyURL != nil {
+		proxy, err := url.Parse(*cluster.Spec.ProxyURL)
 		if err != nil {
 			klog.Errorf("parse proxy error. %v", err)
 			return nil, err

@@ -1922,6 +1922,14 @@ func schema_pkg_apis_cluster_v1alpha1_ResourceModel(ref common.ReferenceCallback
 						},
 					},
 					"ranges": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-map-keys": []interface{}{
+									"name",
+								},
+								"x-kubernetes-list-type": "map",
+							},
+						},
 						SchemaProps: spec.SchemaProps{
 							Description: "Ranges describes the resource quota ranges.",
 							Type:        []string{"array"},

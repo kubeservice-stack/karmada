@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"k8s.io/utils/ptr"
 
 	clusterv1alpha1 "github.com/karmada-io/karmada/pkg/apis/cluster/v1alpha1"
 	policyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1"
@@ -55,7 +56,7 @@ func TestSpreadConstraint_Filter(t *testing.T) {
 			},
 			cluster: &clusterv1alpha1.Cluster{
 				Spec: clusterv1alpha1.ClusterSpec{
-					Provider: "aws",
+					Provider: ptr.To("aws"),
 				},
 			},
 			expectedCode: framework.Success,
@@ -84,7 +85,7 @@ func TestSpreadConstraint_Filter(t *testing.T) {
 			},
 			cluster: &clusterv1alpha1.Cluster{
 				Spec: clusterv1alpha1.ClusterSpec{
-					Region: "us-west-2",
+					Region: ptr.To("us-west-2"),
 				},
 			},
 			expectedCode: framework.Success,

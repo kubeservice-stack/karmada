@@ -24,6 +24,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/utils/ptr"
 
 	clusterapis "github.com/karmada-io/karmada/pkg/apis/cluster"
 )
@@ -67,12 +68,12 @@ func TestMutateCluster(t *testing.T) {
 			args: args{
 				cluster: &clusterapis.Cluster{
 					Spec: clusterapis.ClusterSpec{
-						Zone: "zone1",
+						Zone: ptr.To("zone1"),
 					},
 				},
 			},
 			fun: func(data args) error {
-				if data.cluster.Spec.Zone != "" && len(data.cluster.Spec.Zones) == 0 {
+				if data.cluster.Spec.Zone != nil && len(data.cluster.Spec.Zones) == 0 {
 					return fmt.Errorf("failed to mutate cluster, zones should not be nil")
 				}
 				return nil

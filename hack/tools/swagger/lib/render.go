@@ -122,6 +122,7 @@ func RenderOpenAPISpec(cfg Config) (string, error) {
 			if r.Resource == "clusters" {
 				storage[info.gvk.Version][r.Resource+"/proxy"] = &ProxyREST{}
 			}
+			klog.Info(r)
 		}
 
 		for version, s := range storage {
@@ -134,6 +135,8 @@ func RenderOpenAPISpec(cfg Config) (string, error) {
 			return "", err
 		}
 	}
+
+	klog.Info(serverConfig.OpenAPIConfig)
 
 	// Create Swagger Spec.
 	spec, err := builder.BuildOpenAPISpecFromRoutes(restfuladapter.AdaptWebServices(genericServer.Handler.GoRestfulContainer.RegisteredWebServices()), serverConfig.OpenAPIConfig)

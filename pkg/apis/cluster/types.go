@@ -69,8 +69,10 @@ type ClusterSpec struct {
 
 	// The API endpoint of the member cluster. This can be a hostname,
 	// hostname:port, IP or IP:port.
+	//
+	// +kubebuilder:validation:Minlength=1
 	// +optional
-	APIEndpoint string
+	APIEndpoint *string
 
 	// SecretRef represents the secret that contains mandatory credentials to access the member cluster.
 	// The secret should hold credentials as follows:
@@ -88,15 +90,18 @@ type ClusterSpec struct {
 	// InsecureSkipTLSVerification indicates that the karmada control plane should not confirm the validity of the serving
 	// certificate of the cluster it is connecting to. This will make the HTTPS connection between the karmada control
 	// plane and the member cluster insecure.
-	// Defaults to false.
+	//
+	// +kubebuilder:default:=false
 	// +optional
-	InsecureSkipTLSVerification bool
+	InsecureSkipTLSVerification *bool
 
 	// ProxyURL is the proxy URL for the cluster.
 	// If not empty, the karmada control plane will use this proxy to talk to the cluster.
 	// For more details please refer to: https://github.com/kubernetes/client-go/issues/351
+	//
+	// +kubebuilder:validation:Pattern:="^http(s)?://.+$"
 	// +optional
-	ProxyURL string
+	ProxyURL *string
 
 	// ProxyHeader is the HTTP header required by proxy server.
 	// The key in the key-value pair is HTTP header key and the value is the associated header payloads.
@@ -106,17 +111,17 @@ type ClusterSpec struct {
 
 	// Provider represents the cloud provider name of the member cluster.
 	// +optional
-	Provider string
+	Provider *string
 
 	// Region represents the region in which the member cluster is located.
 	// +optional
-	Region string
+	Region *string
 
 	// Zone represents the zone in which the member cluster is located.
 	// Deprecated: This field was never used by Karmada, and it will not be
 	// removed from v1alpha1 for backward compatibility, use Zones instead.
 	// +optional
-	Zone string
+	Zone *string
 
 	// Zones represents the failure zones(also called availability zones) of the
 	// member cluster. The zones are presented as a slice to support the case
@@ -198,6 +203,8 @@ type ResourceModel struct {
 	Grade uint
 
 	// Ranges describes the resource quota ranges.
+	// +listType=map
+	// +listMapKey=name
 	// +required
 	Ranges []ResourceModelRange
 }
@@ -239,6 +246,7 @@ const (
 )
 
 // ClusterSyncMode describes the mode of synchronization between member cluster and karmada control plane.
+// +kubebuilder:validation:Enum=Push;Pull
 type ClusterSyncMode string
 
 const (
@@ -276,7 +284,7 @@ const (
 type ClusterStatus struct {
 	// KubernetesVersion represents version of the member cluster.
 	// +optional
-	KubernetesVersion string
+	KubernetesVersion *string `json:"kubernetesVersion,omitempty"`
 
 	// APIEnablements represents the list of APIs installed on the member cluster.
 	// +optional

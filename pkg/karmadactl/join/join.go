@@ -27,6 +27,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/klog/v2"
 	"k8s.io/kubectl/pkg/util/templates"
+	"k8s.io/utils/ptr"
 
 	clusterv1alpha1 "github.com/karmada-io/karmada/pkg/apis/cluster/v1alpha1"
 	"github.com/karmada-io/karmada/pkg/apis/cluster/validation"
@@ -267,7 +268,7 @@ func generateClusterInControllerPlane(opts util.ClusterRegisterOption) (*cluster
 	clusterObj := &clusterv1alpha1.Cluster{}
 	clusterObj.Name = opts.ClusterName
 	clusterObj.Spec.SyncMode = clusterv1alpha1.Push
-	clusterObj.Spec.APIEndpoint = opts.ClusterConfig.Host
+	clusterObj.Spec.APIEndpoint = ptr.To(opts.ClusterConfig.Host)
 	clusterObj.Spec.ID = opts.ClusterID
 	clusterObj.Spec.SecretRef = &clusterv1alpha1.LocalSecretReference{
 		Namespace: opts.Secret.Namespace,
@@ -279,7 +280,7 @@ func generateClusterInControllerPlane(opts util.ClusterRegisterOption) (*cluster
 	}
 
 	if opts.ClusterProvider != "" {
-		clusterObj.Spec.Provider = opts.ClusterProvider
+		clusterObj.Spec.Provider = ptr.To(opts.ClusterProvider)
 	}
 
 	if len(opts.ClusterZones) > 0 {
@@ -287,17 +288,17 @@ func generateClusterInControllerPlane(opts util.ClusterRegisterOption) (*cluster
 	}
 
 	if opts.ClusterRegion != "" {
-		clusterObj.Spec.Region = opts.ClusterRegion
+		clusterObj.Spec.Region = ptr.To(opts.ClusterRegion)
 	}
 
-	clusterObj.Spec.InsecureSkipTLSVerification = opts.ClusterConfig.TLSClientConfig.Insecure
+	clusterObj.Spec.InsecureSkipTLSVerification = ptr.To(opts.ClusterConfig.TLSClientConfig.Insecure)
 
 	if opts.ClusterConfig.Proxy != nil {
 		url, err := opts.ClusterConfig.Proxy(nil)
 		if err != nil {
 			return nil, fmt.Errorf("clusterConfig.Proxy error, %v", err)
 		}
-		clusterObj.Spec.ProxyURL = url.String()
+		clusterObj.Spec.ProxyURL = ptr.To(url.String())
 	}
 
 	controlPlaneKarmadaClient := karmadaClientBuilder(opts.ControlPlaneConfig)

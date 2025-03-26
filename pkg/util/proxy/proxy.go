@@ -37,6 +37,7 @@ import (
 	"k8s.io/apiserver/pkg/endpoints/handlers/responsewriters"
 	"k8s.io/apiserver/pkg/endpoints/request"
 	registryrest "k8s.io/apiserver/pkg/registry/rest"
+	"k8s.io/utils/ptr"
 
 	clusterapis "github.com/karmada-io/karmada/pkg/apis/cluster"
 )
@@ -95,8 +96,8 @@ func newProxyHandler(location *url.URL, proxyTransport http.RoundTripper, cluste
 		req.Header.Set("Authorization", fmt.Sprintf("bearer %s", impersonateToken))
 
 		var proxyURL *url.URL
-		if proxyURLStr := cluster.Spec.ProxyURL; proxyURLStr != "" {
-			proxyURL, _ = url.Parse(proxyURLStr)
+		if cluster.Spec.ProxyURL != nil {
+			proxyURL, _ = url.Parse(*cluster.Spec.ProxyURL)
 		}
 
 		// Retain RawQuery in location because upgrading the request will use it.
@@ -131,7 +132,7 @@ func GetTLSConfigForCluster(ctx context.Context, cluster *clusterapis.Cluster, s
 			// Ignore false positive warning: "TLS InsecureSkipVerify may be true. (gosec)"
 			// Whether to skip server certificate verification depends on the
 			// configuration(.spec.insecureSkipTLSVerification, defaults to false) in a Cluster object.
-			InsecureSkipVerify: cluster.Spec.InsecureSkipTLSVerification, //nolint:gosec
+			InsecureSkipVerify: ptr.Deref(cluster.Spec.InsecureSkipTLSVerification, false), //nolint:gosec
 		}, nil
 	}
 	caSecret, err := secretGetter(ctx, cluster.Spec.SecretRef.Namespace, cluster.Spec.SecretRef.Name)
@@ -148,7 +149,7 @@ func GetTLSConfigForCluster(ctx context.Context, cluster *clusterapis.Cluster, s
 		// Ignore false positive warning: "TLS InsecureSkipVerify may be true. (gosec)"
 		// Whether to skip server certificate verification depends on the
 		// configuration(.spec.insecureSkipTLSVerification, defaults to false) in a Cluster object.
-		InsecureSkipVerify: cluster.Spec.InsecureSkipTLSVerification, //nolint:gosec
+		InsecureSkipVerify: ptr.Deref(cluster.Spec.InsecureSkipTLSVerification, false), //nolint:gosec
 	}, nil
 }
 
@@ -169,13 +170,13 @@ func Location(cluster *clusterapis.Cluster, tlsConfig *tls.Config) (*url.URL, ht
 
 func constructLocation(cluster *clusterapis.Cluster) (*url.URL, error) {
 	apiEndpoint := cluster.Spec.APIEndpoint
-	if apiEndpoint == "" {
+	if apiEndpoint == nil {
 		return nil, fmt.Errorf("API endpoint of cluster %s should not be empty", cluster.GetName())
 	}
 
-	uri, err := url.Parse(apiEndpoint)
+	uri, err := url.Parse(*apiEndpoint)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse api endpoint %s: %v", apiEndpoint, err)
+		return nil, fmt.Errorf("failed to parse api endpoint %s: %v", *apiEndpoint, err)
 	}
 	return uri, nil
 }
@@ -188,10 +189,10 @@ func createProxyTransport(cluster *clusterapis.Cluster, tlsConfig *tls.Config) (
 		DisableKeepAlives: true,
 	})
 
-	if proxyURL := cluster.Spec.ProxyURL; proxyURL != "" {
-		u, err := url.Parse(proxyURL)
+	if cluster.Spec.ProxyURL != nil {
+		u, err := url.Parse(*cluster.Spec.ProxyURL)
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse url of proxy url %s: %v", proxyURL, err)
+			return nil, fmt.Errorf("failed to parse url of proxy url %s: %v", *cluster.Spec.ProxyURL, err)
 		}
 		trans.Proxy = http.ProxyURL(u)
 		trans.ProxyConnectHeader = ParseProxyHeaders(cluster.Spec.ProxyHeader)

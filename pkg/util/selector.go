@@ -193,12 +193,12 @@ func ResourceMatchSelectorsPriority(resource *unstructured.Unstructured, selecto
 func extractClusterFields(cluster *clusterv1alpha1.Cluster) labels.Set {
 	clusterFieldsMap := make(labels.Set)
 
-	if cluster.Spec.Provider != "" {
-		clusterFieldsMap[ProviderField] = cluster.Spec.Provider
+	if cluster.Spec.Provider != nil {
+		clusterFieldsMap[ProviderField] = *cluster.Spec.Provider
 	}
 
-	if cluster.Spec.Region != "" {
-		clusterFieldsMap[RegionField] = cluster.Spec.Region
+	if cluster.Spec.Region != nil {
+		clusterFieldsMap[RegionField] = *cluster.Spec.Region
 	}
 
 	return clusterFieldsMap

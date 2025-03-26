@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/ptr"
 
 	clusterv1alpha1 "github.com/karmada-io/karmada/pkg/apis/cluster/v1alpha1"
 	policyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1"
@@ -32,8 +33,8 @@ func NewClusterWithTopology(name, provider, region, zone string) *clusterv1alpha
 	return &clusterv1alpha1.Cluster{
 		ObjectMeta: metav1.ObjectMeta{Name: name},
 		Spec: clusterv1alpha1.ClusterSpec{
-			Provider: provider,
-			Region:   region,
+			Provider: ptr.To(provider),
+			Region:   ptr.To(region),
 			Zones:    []string{zone},
 		},
 	}

@@ -26,8 +26,8 @@ import (
 	unsafe "unsafe"
 
 	cluster "github.com/karmada-io/karmada/pkg/apis/cluster"
-	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -298,7 +298,9 @@ func Convert_cluster_ClusterList_To_v1alpha1_ClusterList(in *cluster.ClusterList
 }
 
 func autoConvert_v1alpha1_ClusterProxyOptions_To_cluster_ClusterProxyOptions(in *ClusterProxyOptions, out *cluster.ClusterProxyOptions, s conversion.Scope) error {
-	out.Path = in.Path
+	if err := v1.Convert_Pointer_string_To_string(&in.Path, &out.Path, s); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -308,7 +310,9 @@ func Convert_v1alpha1_ClusterProxyOptions_To_cluster_ClusterProxyOptions(in *Clu
 }
 
 func autoConvert_cluster_ClusterProxyOptions_To_v1alpha1_ClusterProxyOptions(in *cluster.ClusterProxyOptions, out *ClusterProxyOptions, s conversion.Scope) error {
-	out.Path = in.Path
+	if err := v1.Convert_string_To_Pointer_string(&in.Path, &out.Path, s); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -321,11 +325,9 @@ func autoConvert_url_Values_To_v1alpha1_ClusterProxyOptions(in *url.Values, out 
 	// WARNING: Field TypeMeta does not have json tag, skipping.
 
 	if values, ok := map[string][]string(*in)["path"]; ok && len(values) > 0 {
-		if err := runtime.Convert_Slice_string_To_string(&values, &out.Path, s); err != nil {
-			return err
-		}
+		// FIXME: out.Path is of not yet supported type and requires manual conversion
 	} else {
-		out.Path = ""
+		out.Path = nil
 	}
 	return nil
 }
@@ -338,17 +340,17 @@ func Convert_url_Values_To_v1alpha1_ClusterProxyOptions(in *url.Values, out *Clu
 func autoConvert_v1alpha1_ClusterSpec_To_cluster_ClusterSpec(in *ClusterSpec, out *cluster.ClusterSpec, s conversion.Scope) error {
 	out.ID = in.ID
 	out.SyncMode = cluster.ClusterSyncMode(in.SyncMode)
-	out.APIEndpoint = in.APIEndpoint
+	out.APIEndpoint = (*string)(unsafe.Pointer(in.APIEndpoint))
 	out.SecretRef = (*cluster.LocalSecretReference)(unsafe.Pointer(in.SecretRef))
 	out.ImpersonatorSecretRef = (*cluster.LocalSecretReference)(unsafe.Pointer(in.ImpersonatorSecretRef))
-	out.InsecureSkipTLSVerification = in.InsecureSkipTLSVerification
-	out.ProxyURL = in.ProxyURL
+	out.InsecureSkipTLSVerification = (*bool)(unsafe.Pointer(in.InsecureSkipTLSVerification))
+	out.ProxyURL = (*string)(unsafe.Pointer(in.ProxyURL))
 	out.ProxyHeader = *(*map[string]string)(unsafe.Pointer(&in.ProxyHeader))
-	out.Provider = in.Provider
-	out.Region = in.Region
-	out.Zone = in.Zone
+	out.Provider = (*string)(unsafe.Pointer(in.Provider))
+	out.Region = (*string)(unsafe.Pointer(in.Region))
+	out.Zone = (*string)(unsafe.Pointer(in.Zone))
 	out.Zones = *(*[]string)(unsafe.Pointer(&in.Zones))
-	out.Taints = *(*[]v1.Taint)(unsafe.Pointer(&in.Taints))
+	out.Taints = *(*[]corev1.Taint)(unsafe.Pointer(&in.Taints))
 	out.ResourceModels = *(*[]cluster.ResourceModel)(unsafe.Pointer(&in.ResourceModels))
 	return nil
 }
@@ -361,17 +363,17 @@ func Convert_v1alpha1_ClusterSpec_To_cluster_ClusterSpec(in *ClusterSpec, out *c
 func autoConvert_cluster_ClusterSpec_To_v1alpha1_ClusterSpec(in *cluster.ClusterSpec, out *ClusterSpec, s conversion.Scope) error {
 	out.ID = in.ID
 	out.SyncMode = ClusterSyncMode(in.SyncMode)
-	out.APIEndpoint = in.APIEndpoint
+	out.APIEndpoint = (*string)(unsafe.Pointer(in.APIEndpoint))
 	out.SecretRef = (*LocalSecretReference)(unsafe.Pointer(in.SecretRef))
 	out.ImpersonatorSecretRef = (*LocalSecretReference)(unsafe.Pointer(in.ImpersonatorSecretRef))
-	out.InsecureSkipTLSVerification = in.InsecureSkipTLSVerification
-	out.ProxyURL = in.ProxyURL
+	out.InsecureSkipTLSVerification = (*bool)(unsafe.Pointer(in.InsecureSkipTLSVerification))
+	out.ProxyURL = (*string)(unsafe.Pointer(in.ProxyURL))
 	out.ProxyHeader = *(*map[string]string)(unsafe.Pointer(&in.ProxyHeader))
-	out.Provider = in.Provider
-	out.Region = in.Region
-	out.Zone = in.Zone
+	out.Provider = (*string)(unsafe.Pointer(in.Provider))
+	out.Region = (*string)(unsafe.Pointer(in.Region))
+	out.Zone = (*string)(unsafe.Pointer(in.Zone))
 	out.Zones = *(*[]string)(unsafe.Pointer(&in.Zones))
-	out.Taints = *(*[]v1.Taint)(unsafe.Pointer(&in.Taints))
+	out.Taints = *(*[]corev1.Taint)(unsafe.Pointer(&in.Taints))
 	out.ResourceModels = *(*[]ResourceModel)(unsafe.Pointer(&in.ResourceModels))
 	return nil
 }
@@ -382,9 +384,9 @@ func Convert_cluster_ClusterSpec_To_v1alpha1_ClusterSpec(in *cluster.ClusterSpec
 }
 
 func autoConvert_v1alpha1_ClusterStatus_To_cluster_ClusterStatus(in *ClusterStatus, out *cluster.ClusterStatus, s conversion.Scope) error {
-	out.KubernetesVersion = in.KubernetesVersion
+	out.KubernetesVersion = (*string)(unsafe.Pointer(in.KubernetesVersion))
 	out.APIEnablements = *(*[]cluster.APIEnablement)(unsafe.Pointer(&in.APIEnablements))
-	out.Conditions = *(*[]metav1.Condition)(unsafe.Pointer(&in.Conditions))
+	out.Conditions = *(*[]v1.Condition)(unsafe.Pointer(&in.Conditions))
 	out.NodeSummary = (*cluster.NodeSummary)(unsafe.Pointer(in.NodeSummary))
 	out.ResourceSummary = (*cluster.ResourceSummary)(unsafe.Pointer(in.ResourceSummary))
 	out.RemedyActions = *(*[]string)(unsafe.Pointer(&in.RemedyActions))
@@ -397,9 +399,9 @@ func Convert_v1alpha1_ClusterStatus_To_cluster_ClusterStatus(in *ClusterStatus, 
 }
 
 func autoConvert_cluster_ClusterStatus_To_v1alpha1_ClusterStatus(in *cluster.ClusterStatus, out *ClusterStatus, s conversion.Scope) error {
-	out.KubernetesVersion = in.KubernetesVersion
+	out.KubernetesVersion = (*string)(unsafe.Pointer(in.KubernetesVersion))
 	out.APIEnablements = *(*[]APIEnablement)(unsafe.Pointer(&in.APIEnablements))
-	out.Conditions = *(*[]metav1.Condition)(unsafe.Pointer(&in.Conditions))
+	out.Conditions = *(*[]v1.Condition)(unsafe.Pointer(&in.Conditions))
 	out.NodeSummary = (*NodeSummary)(unsafe.Pointer(in.NodeSummary))
 	out.ResourceSummary = (*ResourceSummary)(unsafe.Pointer(in.ResourceSummary))
 	out.RemedyActions = *(*[]string)(unsafe.Pointer(&in.RemedyActions))
@@ -478,7 +480,7 @@ func Convert_cluster_ResourceModel_To_v1alpha1_ResourceModel(in *cluster.Resourc
 }
 
 func autoConvert_v1alpha1_ResourceModelRange_To_cluster_ResourceModelRange(in *ResourceModelRange, out *cluster.ResourceModelRange, s conversion.Scope) error {
-	out.Name = v1.ResourceName(in.Name)
+	out.Name = corev1.ResourceName(in.Name)
 	out.Min = in.Min
 	out.Max = in.Max
 	return nil
@@ -490,7 +492,7 @@ func Convert_v1alpha1_ResourceModelRange_To_cluster_ResourceModelRange(in *Resou
 }
 
 func autoConvert_cluster_ResourceModelRange_To_v1alpha1_ResourceModelRange(in *cluster.ResourceModelRange, out *ResourceModelRange, s conversion.Scope) error {
-	out.Name = v1.ResourceName(in.Name)
+	out.Name = corev1.ResourceName(in.Name)
 	out.Min = in.Min
 	out.Max = in.Max
 	return nil
@@ -502,9 +504,9 @@ func Convert_cluster_ResourceModelRange_To_v1alpha1_ResourceModelRange(in *clust
 }
 
 func autoConvert_v1alpha1_ResourceSummary_To_cluster_ResourceSummary(in *ResourceSummary, out *cluster.ResourceSummary, s conversion.Scope) error {
-	out.Allocatable = *(*v1.ResourceList)(unsafe.Pointer(&in.Allocatable))
-	out.Allocating = *(*v1.ResourceList)(unsafe.Pointer(&in.Allocating))
-	out.Allocated = *(*v1.ResourceList)(unsafe.Pointer(&in.Allocated))
+	out.Allocatable = *(*corev1.ResourceList)(unsafe.Pointer(&in.Allocatable))
+	out.Allocating = *(*corev1.ResourceList)(unsafe.Pointer(&in.Allocating))
+	out.Allocated = *(*corev1.ResourceList)(unsafe.Pointer(&in.Allocated))
 	out.AllocatableModelings = *(*[]cluster.AllocatableModeling)(unsafe.Pointer(&in.AllocatableModelings))
 	return nil
 }
@@ -515,9 +517,9 @@ func Convert_v1alpha1_ResourceSummary_To_cluster_ResourceSummary(in *ResourceSum
 }
 
 func autoConvert_cluster_ResourceSummary_To_v1alpha1_ResourceSummary(in *cluster.ResourceSummary, out *ResourceSummary, s conversion.Scope) error {
-	out.Allocatable = *(*v1.ResourceList)(unsafe.Pointer(&in.Allocatable))
-	out.Allocating = *(*v1.ResourceList)(unsafe.Pointer(&in.Allocating))
-	out.Allocated = *(*v1.ResourceList)(unsafe.Pointer(&in.Allocated))
+	out.Allocatable = *(*corev1.ResourceList)(unsafe.Pointer(&in.Allocatable))
+	out.Allocating = *(*corev1.ResourceList)(unsafe.Pointer(&in.Allocating))
+	out.Allocated = *(*corev1.ResourceList)(unsafe.Pointer(&in.Allocated))
 	out.AllocatableModelings = *(*[]AllocatableModeling)(unsafe.Pointer(&in.AllocatableModelings))
 	return nil
 }

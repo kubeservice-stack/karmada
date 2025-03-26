@@ -81,8 +81,8 @@ func ValidateClusterSpec(spec *api.ClusterSpec, fldPath *field.Path) field.Error
 		allErrs = append(allErrs, field.NotSupported(fldPath.Child("syncMode"), spec.SyncMode, supportedSyncModes.List()))
 	}
 
-	if spec.APIEndpoint != "" {
-		allErrs = append(allErrs, ValidateClusterAPIEndpoint(fldPath.Child("apiEndpoint"), spec.APIEndpoint, false)...)
+	if spec.APIEndpoint != nil {
+		allErrs = append(allErrs, ValidateClusterAPIEndpoint(fldPath.Child("apiEndpoint"), *spec.APIEndpoint, false)...)
 	}
 
 	if spec.SecretRef != nil {
@@ -103,8 +103,8 @@ func ValidateClusterSpec(spec *api.ClusterSpec, fldPath *field.Path) field.Error
 		}
 	}
 
-	if spec.ProxyURL != "" {
-		allErrs = append(allErrs, ValidateClusterProxyURL(fldPath.Child("proxyURL"), spec.ProxyURL)...)
+	if spec.ProxyURL != nil {
+		allErrs = append(allErrs, ValidateClusterProxyURL(fldPath.Child("proxyURL"), *spec.ProxyURL)...)
 	}
 
 	allErrs = append(allErrs, validateClusterSpecForFieldSelector(spec, fldPath)...)
@@ -166,21 +166,25 @@ func ValidateClusterProxyURL(fldPath *field.Path, proxyURL string) field.ErrorLi
 // validateClusterSpecForFieldSelector validates cluster's field value.
 func validateClusterSpecForFieldSelector(spec *api.ClusterSpec, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
-	if errs := kubevalidation.IsValidLabelValue(spec.Provider); len(errs) != 0 {
-		allErrs = append(allErrs, field.Invalid(fldPath.Child("provider"), spec.Provider, strings.Join(errs, "; ")))
+	if spec.Provider != nil {
+		if errs := kubevalidation.IsValidLabelValue(*spec.Provider); len(errs) != 0 {
+			allErrs = append(allErrs, field.Invalid(fldPath.Child("provider"), *spec.Provider, strings.Join(errs, "; ")))
+		}
 	}
-	if errs := kubevalidation.IsValidLabelValue(spec.Region); len(errs) != 0 {
-		allErrs = append(allErrs, field.Invalid(fldPath.Child("region"), spec.Region, strings.Join(errs, "; ")))
+	if spec.Region != nil {
+		if errs := kubevalidation.IsValidLabelValue(*spec.Region); len(errs) != 0 {
+			allErrs = append(allErrs, field.Invalid(fldPath.Child("region"), *spec.Region, strings.Join(errs, "; ")))
+		}
 	}
 
 	// Zone and Zones cannot co-exist.
 	// see https://github.com/karmada-io/karmada/issues/3952
-	if spec.Zone != "" && len(spec.Zones) != 0 {
+	if spec.Zone != nil && len(spec.Zones) != 0 {
 		return append(allErrs, field.TypeInvalid(fldPath.Child("spec"), spec, "Zone and Zones cannot co-exist"))
 	}
 
-	if spec.Zone != "" {
-		if errs := kubevalidation.IsValidLabelValue(spec.Zone); len(errs) != 0 {
+	if spec.Zone != nil {
+		if errs := kubevalidation.IsValidLabelValue(*spec.Zone); len(errs) != 0 {
 			allErrs = append(allErrs, field.Invalid(fldPath.Child("Zone"), spec.Zone, strings.Join(errs, "; ")))
 		}
 		return allErrs

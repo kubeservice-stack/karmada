@@ -40,9 +40,9 @@ func MutateCluster(cluster *clusterapis.Cluster) {
 
 // migrateZoneToZones add zones field for cluster if Zones not set but Zone set only.
 func migrateZoneToZones(cluster *clusterapis.Cluster) {
-	if cluster.Spec.Zone != "" && len(cluster.Spec.Zones) == 0 {
-		cluster.Spec.Zones = append(cluster.Spec.Zones, cluster.Spec.Zone)
-		cluster.Spec.Zone = ""
+	if cluster.Spec.Zone != nil && len(cluster.Spec.Zones) == 0 {
+		cluster.Spec.Zones = append(cluster.Spec.Zones, *cluster.Spec.Zone)
+		cluster.Spec.Zone = nil
 	}
 }
 

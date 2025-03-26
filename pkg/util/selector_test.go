@@ -24,6 +24,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/utils/ptr"
 
 	clusterv1alpha1 "github.com/karmada-io/karmada/pkg/apis/cluster/v1alpha1"
 	policyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1"
@@ -314,8 +315,8 @@ func TestClusterMatches(t *testing.T) {
 		},
 		Spec: clusterv1alpha1.ClusterSpec{
 			Zones:    []string{"zone1", "zone2", "zone3"},
-			Region:   "region1",
-			Provider: "provider1",
+			Region:   ptr.To("region1"),
+			Provider: ptr.To("provider1"),
 		},
 	}
 
@@ -395,7 +396,7 @@ func TestClusterMatches(t *testing.T) {
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
 						{Key: ZoneField, Operator: corev1.NodeSelectorOpIn, Values: cluster.Spec.Zones},
-						{Key: RegionField, Operator: corev1.NodeSelectorOpIn, Values: []string{cluster.Spec.Region}},
+						{Key: RegionField, Operator: corev1.NodeSelectorOpIn, Values: []string{*cluster.Spec.Region}},
 					},
 				},
 			},
@@ -407,7 +408,7 @@ func TestClusterMatches(t *testing.T) {
 				ClusterNames: []string{cluster.Name},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: ProviderField, Operator: corev1.NodeSelectorOpIn, Values: []string{cluster.Spec.Provider}},
+						{Key: ProviderField, Operator: corev1.NodeSelectorOpIn, Values: []string{*cluster.Spec.Provider}},
 					},
 				},
 			},
@@ -419,7 +420,7 @@ func TestClusterMatches(t *testing.T) {
 				ClusterNames: []string{cluster.Name},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: RegionField, Operator: corev1.NodeSelectorOpIn, Values: []string{cluster.Spec.Region}},
+						{Key: RegionField, Operator: corev1.NodeSelectorOpIn, Values: []string{*cluster.Spec.Region}},
 					},
 				},
 			},
@@ -443,7 +444,7 @@ func TestClusterMatches(t *testing.T) {
 				ClusterNames: []string{cluster.Name},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: ProviderField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{cluster.Spec.Provider}},
+						{Key: ProviderField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{*cluster.Spec.Provider}},
 					},
 				},
 			},
@@ -455,7 +456,7 @@ func TestClusterMatches(t *testing.T) {
 				ClusterNames: []string{cluster.Name},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: RegionField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{cluster.Spec.Region}},
+						{Key: RegionField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{*cluster.Spec.Region}},
 					},
 				},
 			},
@@ -483,7 +484,7 @@ func TestClusterMatches(t *testing.T) {
 				},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: ProviderField, Operator: corev1.NodeSelectorOpIn, Values: []string{cluster.Spec.Provider}},
+						{Key: ProviderField, Operator: corev1.NodeSelectorOpIn, Values: []string{*cluster.Spec.Provider}},
 					},
 				},
 			},
@@ -497,7 +498,7 @@ func TestClusterMatches(t *testing.T) {
 				},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: RegionField, Operator: corev1.NodeSelectorOpIn, Values: []string{cluster.Spec.Region}},
+						{Key: RegionField, Operator: corev1.NodeSelectorOpIn, Values: []string{*cluster.Spec.Region}},
 					},
 				},
 			},
@@ -525,7 +526,7 @@ func TestClusterMatches(t *testing.T) {
 				},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: ProviderField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{cluster.Spec.Provider}},
+						{Key: ProviderField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{*cluster.Spec.Provider}},
 					},
 				},
 			},
@@ -539,7 +540,7 @@ func TestClusterMatches(t *testing.T) {
 				},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: RegionField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{cluster.Spec.Region}},
+						{Key: RegionField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{*cluster.Spec.Region}},
 					},
 				},
 			},
@@ -628,7 +629,7 @@ func TestClusterMatches(t *testing.T) {
 			affinity: policyv1alpha1.ClusterAffinity{
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: RegionField, Operator: corev1.NodeSelectorOpIn, Values: []string{cluster.Spec.Region}},
+						{Key: RegionField, Operator: corev1.NodeSelectorOpIn, Values: []string{*cluster.Spec.Region}},
 					},
 				},
 			},
@@ -640,7 +641,7 @@ func TestClusterMatches(t *testing.T) {
 				ClusterNames: []string{cluster.Name},
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: RegionField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{cluster.Spec.Region}},
+						{Key: RegionField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{*cluster.Spec.Region}},
 					},
 				},
 			},
@@ -663,7 +664,7 @@ func TestClusterMatches(t *testing.T) {
 			affinity: policyv1alpha1.ClusterAffinity{
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: ProviderField, Operator: corev1.NodeSelectorOpIn, Values: []string{cluster.Spec.Provider}},
+						{Key: ProviderField, Operator: corev1.NodeSelectorOpIn, Values: []string{*cluster.Spec.Provider}},
 					},
 				},
 			},
@@ -674,7 +675,7 @@ func TestClusterMatches(t *testing.T) {
 			affinity: policyv1alpha1.ClusterAffinity{
 				FieldSelector: &policyv1alpha1.FieldSelector{
 					MatchExpressions: []corev1.NodeSelectorRequirement{
-						{Key: ProviderField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{cluster.Spec.Provider}},
+						{Key: ProviderField, Operator: corev1.NodeSelectorOpNotIn, Values: []string{*cluster.Spec.Provider}},
 					},
 				},
 			},
@@ -945,7 +946,7 @@ func Test_extractClusterFields(t *testing.T) {
 			args: args{
 				cluster: &clusterv1alpha1.Cluster{
 					Spec: clusterv1alpha1.ClusterSpec{
-						Provider: "foo",
+						Provider: ptr.To("foo"),
 					},
 				},
 			},
@@ -958,7 +959,7 @@ func Test_extractClusterFields(t *testing.T) {
 			args: args{
 				cluster: &clusterv1alpha1.Cluster{
 					Spec: clusterv1alpha1.ClusterSpec{
-						Region: "foo",
+						Region: ptr.To("foo"),
 					},
 				},
 			},
@@ -971,8 +972,8 @@ func Test_extractClusterFields(t *testing.T) {
 			args: args{
 				cluster: &clusterv1alpha1.Cluster{
 					Spec: clusterv1alpha1.ClusterSpec{
-						Provider: "foo",
-						Region:   "bar",
+						Provider: ptr.To("foo"),
+						Region:   ptr.To("bar"),
 					},
 				},
 			},
